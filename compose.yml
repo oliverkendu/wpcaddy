@@ -24,11 +24,11 @@ services:
       - /volume1/docker/wordpress/html:/var/www/html
       - /volume1/docker/wordpress/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     environment:
-      WORDPRESS_DB_USER:siteuser
-      WORDPRESS_DB_PASSWORD:sitepassword
-      WORDPRESS_DB_NAME:wordpress
-      WORDPRESS_DB_HOST:db:3306
-      WORDPRESS_CONFIG_EXTRA:define('WP_REDIS_HOST','redis');
+      WORDPRESS_DB_USER: siteuser
+      WORDPRESS_DB_PASSWORD: sitepassword
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_CONFIG_EXTRA: define('WP_REDIS_HOST','redis');
       WORDPRESS_ADMIN_USER: dpham
       WORDPRESS_ADMIN_PASSWORD: Bimat-1512
       WORDPRESS_ADMIN_EMAIL: duong15121989@gmail.com
@@ -43,12 +43,12 @@ services:
     volumes:
       - /volume1/docker/wordpress/mysql:/var/lib/mysql
     environment:
-      MYSQL_USER:siteuser
-      MYSQL_PASSWORD:sitepassword
-      MYSQL_DATABASE:wordpress
-      MYSQL_ROOT_PASSWORD:rootpassword
-      MYSQL_RANDOM_ROOT_PASSWORD:1
-      MARIADB_RANDOM_ROOT_PASSWORD:1
+      MYSQL_USER: siteuser
+      MYSQL_PASSWORD: sitepassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
 
   wpcli:
     depends_on:
@@ -57,7 +57,6 @@ services:
     image: wordpress:cli
     entrypoint: wp
     command: "--info"
-    env_file: .env
     volumes:
       - /volume1/docker/wordpress/html:/var/www/html
 
