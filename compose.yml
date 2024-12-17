@@ -1,1 +1,86 @@
+services:
+  caddy:
+    image: caddy:2.8.4-alpine
+    container_name: caddy
+    environment:
+      SERVER_NAME: dpham.one
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - /volume1/docker/wordpress/caddy/caddy_data:/data
+      - /volume1/docker/wordpress/caddy/caddy_config:/config
+      - /volume1/docker/wordpress/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - /volume1/docker/wordpress/html:/var/www/html
 
+  wordpress:
+    image: wordpress:fpm-alpine
+    container_name: wordpress
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - /volume1/docker/wordpress/html:/var/www/html
+      - /volume1/docker/wordpress/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      WORDPRESS_DB_USER:siteuser
+      WORDPRESS_DB_PASSWORD:sitepassword
+      WORDPRESS_DB_NAME:wordpress
+      WORDPRESS_DB_HOST:db:3306
+      WORDPRESS_CONFIG_EXTRA:define('WP_REDIS_HOST','redis');
+      WORDPRESS_ADMIN_USER: dpham
+      WORDPRESS_ADMIN_PASSWORD: Bimat-1512
+      WORDPRESS_ADMIN_EMAIL: duong15121989@gmail.com
+      WORDPRESS_TITLE: Duong Pham
+      WORDPRESS_PERMALINK_STRUCTURE: /%postname%/
+      WORDPRESS_THEME_TO_INSTALL: "kadence"
+      WORDPRESS_PLUGINS_TO_INSTALL: "redis-cache cache-enabler seo-by-rank-math"
+
+  db:
+    image: mariadb:10.11.6-jammy
+    restart: always
+    volumes:
+      - /volume1/docker/wordpress/mysql:/var/lib/mysql
+    environment:
+      MYSQL_USER:siteuser
+      MYSQL_PASSWORD:sitepassword
+      MYSQL_DATABASE:wordpress
+      MYSQL_ROOT_PASSWORD:rootpassword
+      MYSQL_RANDOM_ROOT_PASSWORD:1
+      MARIADB_RANDOM_ROOT_PASSWORD:1
+
+  wpcli:
+    depends_on:
+      - db
+      - wordpress
+    image: wordpress:cli
+    entrypoint: wp
+    command: "--info"
+    env_file: .env
+    volumes:
+      - /volume1/docker/wordpress/html:/var/www/html
+
+  #phpmyadmin:
+  #  image: bitnami/phpmyadmin:5.2.0-debian-11-r43
+  #  ports:
+  #    - 8080:8080
+  #    - 8443:8443
+  #  environment:
+  #      DATABASE_HOST: db
+  #  restart: always
+
+  #redis:
+  #  image: redis:6.2.14
+  #  restart: always
+
+  #elastic:
+  #  image: elasticsearch:7.17.13
+  #  restart: always
+  #  environment:
+  #    discovery.type: single-node
+  #    xpack.security.enabled: false
+  #  ports:
+  #    - 9200:9200
+  #  volumes:
+  #    - ./elastic:/usr/share/elasticsearch/data
